@@ -2,6 +2,8 @@ package it.test.docker;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -19,13 +21,15 @@ public class DockerUserImageApplication implements ApplicationListener<WebServer
 	private static String loginUrl;
 	private static String userImageUrl;
 	
+	private static final List<String> HIDDEN_VARS = Arrays.asList(System.getenv().getOrDefault("HIDDEN_VARS", "").split(","));
+	
 	public static void main(String[] args) {
 		SpringApplication.run(DockerUserImageApplication.class, args);
 		
 		log.info("==== Variabili d'ambiente ====");
 		
 		for (Map.Entry<String, String> e : new TreeMap<String, String>(System.getenv()).entrySet()) {
-			log.info("[" + e.getKey() + "]=[" + e.getValue() + "]");
+			log.info("[" + e.getKey() + "]=[" + (HIDDEN_VARS.contains(e.getKey()) ? "<hidden>" : e.getValue()) + "]");
 		}
 		
 		log.info("==== System properties ====");
