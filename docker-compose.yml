@@ -1,0 +1,34 @@
+version: '3'
+services:
+  minio_service:
+    image: 'bitnami/minio:latest'
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_USER}
+      - MINIO_SECRET_KEY=${MINIO_PASSWORD}
+    ports:
+      - 9000:9000
+    networks:
+      - net
+  docker-user-image:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - EXTERNAL_PORT=${EXTERNAL_PORT}
+      - INTERNAL_PORT=${INTERNAL_PORT}
+      - OKTA_DOMAIN=${OKTA_DOMAIN}
+      - OKTA_USER_URL=${OKTA_USER_URL}
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_USER=${MINIO_USER}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_BUCKET=${MINIO_BUCKET}
+    ports:
+      - ${EXTERNAL_PORT}:${INTERNAL_PORT}
+    networks:
+      - net
+    depends_on:
+      - minio_service
+
+networks:
+   net:
